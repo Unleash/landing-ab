@@ -10,7 +10,7 @@ const Landing = ({ text, cta, tracker, imageUrl, variant }) => {
     tracker.event({
       category: "CTA",
       action: "Navigated to explore page",
-      variant: variant,
+      label: variant,
     });
     history.push("/search");
   };
