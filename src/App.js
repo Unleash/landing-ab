@@ -13,13 +13,17 @@ import northernLights from "./img/northernlights.jpg";
 import mountains from "./img/mountains.jpg";
 
 function App({ unleash, userId }) {
-  const [toggle, setToggle] = useState({ enabled: true, name: "default" });
+  const [toggle, setToggle] = useState({
+    enabled: true,
+    name: "default",
+    ready: false,
+  });
 
   const getToggle = useCallback(() => {
     const enabled = unleash.getVariant("travel.landing").enabled;
     const name = unleash.getVariant("travel.landing").name;
 
-    setToggle({ enabled, name });
+    setToggle({ enabled, name, ready: true });
   }, [unleash]);
 
   useEffect(() => {
@@ -36,6 +40,8 @@ function App({ unleash, userId }) {
     ReactGA.set({ variant: toggle.name });
     ReactGA.pageview(window.location);
   }, [toggle.name]);
+
+  if (!toggle.ready) return null;
 
   let landing;
   if (toggle.name === "tent") {
