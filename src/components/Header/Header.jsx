@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 import styles from "./Header.module.css";
 
@@ -8,10 +9,10 @@ const Header = () => {
   return (
     <div className={styles.header}>
       <div className={styles.container}>
-        <div className={styles.logoContainer}>
+        <Link to='/' className={styles.logoContainer}>
           <LogoSVG className={styles.logo} />
           <h1>Travel Norway</h1>
-        </div>
+        </Link>
 
         <div className={styles.menu}>
           <ul>
