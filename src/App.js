@@ -73,8 +73,16 @@ function App({ unleash, userId }) {
   return (
     <BrowserRouter>
       <div className='App'>
-        <Header />
-        <Route exact path='/' render={() => landing} />
+        <Route
+          exact
+          path='/'
+          render={() => (
+            <>
+              <Header />
+              {landing}{" "}
+            </>
+          )}
+        />
         <Route
           path='/search'
           render={() => <Search tracker={ReactGA} />}

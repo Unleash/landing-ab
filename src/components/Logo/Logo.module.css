@@ -1,0 +1,17 @@
+.logoContainer h1 {
+  font-size: 1.2rem;
+}
+
+.logo {
+  fill: #fff;
+  width: 30px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+}

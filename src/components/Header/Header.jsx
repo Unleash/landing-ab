@@ -1,18 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
+
+import Logo from "../Logo/Logo";
 
 import styles from "./Header.module.css";
-
-import { ReactComponent as LogoSVG } from "../../img/route.svg";
 
 const Header = () => {
   return (
     <div className={styles.header}>
       <div className={styles.container}>
-        <Link to='/' className={styles.logoContainer}>
-          <LogoSVG className={styles.logo} />
-          <h1>Travel Norway</h1>
-        </Link>
+        <Logo />
 
         <div className={styles.menu}>
           <ul>
