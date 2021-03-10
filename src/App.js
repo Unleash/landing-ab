@@ -1,30 +1,41 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import ReactGA from "react-ga";
+import { BrowserRouter, Route } from "react-router-dom";
 
 import "./App.css";
 
 import Header from "./components/Header/Header";
 import Landing from "./components/Landing/Landing";
+import Search from "./components/Search/Search";
 
 import tentImage from "./img/pexels-josh-hild-2422265.jpg";
 import northernLights from "./img/northernlights.jpg";
 import mountains from "./img/mountains.jpg";
 
-function App({ unleash }) {
-  const [toggle, setToggle] = useState({});
+function App({ unleash, userId }) {
+  const [toggle, setToggle] = useState({ enabled: true, name: "default" });
 
-  useEffect(() => {
-    unleash.on("update", () => getToggle());
-  }, []);
-
-  const getToggle = () => {
+  const getToggle = useCallback(() => {
     const enabled = unleash.getVariant("travel.landing").enabled;
     const name = unleash.getVariant("travel.landing").name;
-    console.log("UPDATING TOGGLE");
-    console.log("NAME", name);
-    console.log("ENABLED", enabled);
 
     setToggle({ enabled, name });
-  };
+  }, [unleash]);
+
+  useEffect(() => {
+    ReactGA.initialize(process.env.REACT_APP_GA_TRACKING, {
+      gaOptions: {
+        userId: userId,
+      },
+    });
+
+    unleash.on("update", () => getToggle());
+  }, [unleash, getToggle, userId]);
+
+  useEffect(() => {
+    ReactGA.set({ variant: toggle.name });
+    ReactGA.pageview(window.location);
+  }, [toggle.name]);
 
   let landing;
   if (toggle.name === "tent") {
@@ -32,8 +43,9 @@ function App({ unleash }) {
       <Landing
         text='Explore fantastic nature all over Norway today.'
         cta='Find your experience'
-        variant='variantA'
+        variant={toggle.name}
         imageUrl={tentImage}
+        tracker={ReactGA}
       />
     );
   } else if (toggle.name === "northern-lights") {
@@ -41,8 +53,9 @@ function App({ unleash }) {
       <Landing
         text='Norway is amazing. Find your experience today!'
         cta='Find adventure'
-        variant='variantB'
+        variant={toggle.name}
         imageUrl={northernLights}
+        tracker={ReactGA}
       />
     );
   } else {
@@ -50,17 +63,24 @@ function App({ unleash }) {
       <Landing
         text='Amazing nature.'
         cta='Explore'
-        variant='default'
+        variant={toggle.name}
         imageUrl={mountains}
+        tracker={ReactGA}
       />
     );
   }
 
   return (
-    <div className='App'>
-      <Header />
-      {landing}
-    </div>
+    <BrowserRouter>
+      <div className='App'>
+        <Header />
+        <Route exact path='/' render={() => landing} />
+        <Route
+          path='/search'
+          render={() => <Search tracker={ReactGA} />}
+        />
+      </div>
+    </BrowserRouter>
   );
 }
 

@@ -1,10 +1,18 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 import styles from "./Landing.module.css";
 
 const Landing = ({ text, cta, tracker, imageUrl, variant }) => {
+  const history = useHistory();
+
   const onClick = () => {
-    console.log("tracking");
+    tracker.event({
+      category: "CTA",
+      action: "Navigated to explore page",
+      variant: variant,
+    });
+    history.push("/landing");
   };
 
   const style = {

@@ -14,7 +14,7 @@ if (!userId) {
 }
 
 const unleash = new UnleashClient({
-  url: "https://app.unleash-hosted.com/hosted/api/proxy",
+  url: process.env.REACT_APP_PROXY_URL,
   clientKey: process.env.REACT_APP_CLIENT_KEY,
   refreshInterval: 2,
   appName: "landing-example",
@@ -26,7 +26,7 @@ unleash.start();
 
 ReactDOM.render(
   <React.StrictMode>
-    <App unleash={unleash} />
+    <App unleash={unleash} userId={userId} />
   </React.StrictMode>,
   document.getElementById("root")
 );
