@@ -1,0 +1,37 @@
+.header {
+  padding: 0.25rem;
+  background: transparent;
+  position: absolute;
+  width: 100%;
+  color: #fff;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1024px;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.logoContainer h1 {
+  font-size: 1.2rem;
+}
+
+.logo {
+  fill: #fff;
+  width: 30px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.container ul {
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+}
