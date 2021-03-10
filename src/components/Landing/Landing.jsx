@@ -12,7 +12,7 @@ const Landing = ({ text, cta, tracker, imageUrl, variant }) => {
       action: "Navigated to explore page",
       variant: variant,
     });
-    history.push("/landing");
+    history.push("/search");
   };
 
   const style = {
