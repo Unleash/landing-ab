@@ -37,9 +37,21 @@ function App({ unleash, userId }) {
   }, [unleash, getToggle, userId]);
 
   useEffect(() => {
-    ReactGA.set({ variant: toggle.name });
+    if (toggle.ready) {
+      ReactGA.event({
+        category: "Viewed page",
+        action: "Viewed the landing page",
+        label: toggle.name,
+      });
+    }
+  }, [toggle.ready, toggle.name]);
+
+  useEffect(() => {
+    ReactGA.set({
+      dimension1: `travel.landing - ${toggle.variant}`,
+    });
     ReactGA.pageview(window.location);
-  }, [toggle.name]);
+  }, [toggle.variant, toggle.toggleName]);
 
   if (!toggle.ready) return null;
 
