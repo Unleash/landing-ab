@@ -1,27 +1,29 @@
-import React, { useEffect, useState, useCallback } from "react";
-import ReactGA from "react-ga";
-import { BrowserRouter, Route } from "react-router-dom";
+/** @format */
 
-import "./App.css";
+import React, { useEffect, useState, useCallback } from 'react';
+import ReactGA from 'react-ga';
+import { BrowserRouter, Route } from 'react-router-dom';
 
-import Header from "./components/Header/Header";
-import Landing from "./components/Landing/Landing";
-import Search from "./components/Search/Search";
+import './App.css';
 
-import tentImage from "./img/pexels-josh-hild-2422265.jpg";
-import northernLights from "./img/northernlights.jpg";
-import mountains from "./img/mountains.jpg";
+import Header from './components/Header/Header';
+import Landing from './components/Landing/Landing';
+import Search from './components/Search/Search';
+
+import tentImage from './img/pexels-josh-hild-2422265.jpg';
+import northernLights from './img/northernlights.jpg';
+import mountains from './img/mountains.jpg';
 
 function App({ unleash, userId }) {
   const [toggle, setToggle] = useState({
     enabled: true,
-    name: "default",
+    name: 'default',
     ready: false,
   });
 
   const getToggle = useCallback(() => {
-    const enabled = unleash.getVariant("travel.landing").enabled;
-    const name = unleash.getVariant("travel.landing").name;
+    const enabled = unleash.getVariant('travel.landing').enabled;
+    const name = unleash.getVariant('travel.landing').name;
 
     setToggle({ enabled, name, ready: true });
   }, [unleash]);
@@ -33,14 +35,14 @@ function App({ unleash, userId }) {
       },
     });
 
-    unleash.on("update", () => getToggle());
+    unleash.on('update', () => getToggle());
   }, [unleash, getToggle, userId]);
 
   useEffect(() => {
     if (toggle.ready) {
       ReactGA.event({
-        category: "Viewed page",
-        action: "Viewed the landing page",
+        category: 'Viewed page',
+        action: 'Viewed the landing page',
         label: toggle.name,
       });
     }
@@ -56,7 +58,7 @@ function App({ unleash, userId }) {
   if (!toggle.ready) return null;
 
   let landing;
-  if (toggle.name === "tent") {
+  if (toggle.name === 'tent') {
     landing = (
       <Landing
         text='Explore fantastic nature all over Norway today.'
@@ -64,9 +66,10 @@ function App({ unleash, userId }) {
         variant={toggle.name}
         imageUrl={tentImage}
         tracker={ReactGA}
+        unleash={unleash}
       />
     );
-  } else if (toggle.name === "northern-lights") {
+  } else if (toggle.name === 'northern-lights') {
     landing = (
       <Landing
         text='Norway is amazing. Find your experience today!'
@@ -74,6 +77,7 @@ function App({ unleash, userId }) {
         variant={toggle.name}
         imageUrl={northernLights}
         tracker={ReactGA}
+        unleash={unleash}
       />
     );
   } else {
@@ -84,6 +88,7 @@ function App({ unleash, userId }) {
         variant={toggle.name}
         imageUrl={mountains}
         tracker={ReactGA}
+        unleash={unleash}
       />
     );
   }
@@ -97,7 +102,7 @@ function App({ unleash, userId }) {
           render={() => (
             <>
               <Header />
-              {landing}{" "}
+              {landing}{' '}
             </>
           )}
         />

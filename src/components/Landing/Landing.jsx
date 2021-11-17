@@ -1,25 +1,28 @@
-import React from "react";
-import { useHistory } from "react-router-dom";
+/** @format */
 
-import styles from "./Landing.module.css";
+import React from 'react';
+import { useHistory } from 'react-router-dom';
 
-const Landing = ({ text, cta, tracker, imageUrl, variant }) => {
+import styles from './Landing.module.css';
+
+const Landing = ({ text, cta, tracker, imageUrl, variant, unleash }) => {
   const history = useHistory();
 
   const onClick = () => {
+    unleash.sendCustomEvent('landing.ab');
     tracker.event({
-      category: "CTA",
-      action: "Navigated to explore page",
+      category: 'CTA',
+      action: 'Navigated to explore page',
       label: variant,
     });
-    history.push("/search");
+    history.push('/search');
   };
 
   const style = {
     backgroundImage: `url(${imageUrl})`,
-    backgroundSize: "cover",
-    height: "calc(100vh)",
-    backgroundPosition: "50% 80%",
+    backgroundSize: 'cover',
+    height: 'calc(100vh)',
+    backgroundPosition: '50% 80%',
   };
 
   return (
