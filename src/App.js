@@ -1,6 +1,7 @@
 /** @format */
 
 import React, { useEffect, useState, useCallback } from 'react';
+import mixpanel from 'mixpanel-browser';
 import ReactGA from 'react-ga';
 import { BrowserRouter, Route } from 'react-router-dom';
 import {
@@ -42,8 +43,6 @@ if (!userId) {
   localStorage.setItem('userId', userId);
 }
 
-console.log(userId);
-
 unleash.updateContext({ userId });
 unleash.start();
 
@@ -60,6 +59,12 @@ function App() {
 
     unleash.on(EVENTS.GET_VARIANT, (event) => {
       plausible.trackEvent(event);
+
+      ReactGA.event({
+        action: 'Received variant',
+        category: 'variant',
+        label: event.label,
+      });
     });
   }, []);
 
