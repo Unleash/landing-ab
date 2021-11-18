@@ -32,7 +32,7 @@ const unleash = new UnleashClient({
   refreshInterval: 2,
   appName: 'landing-example',
   environment: 'production',
-  callback,
+  callbacks: [callback],
 });
 
 let userId = localStorage.getItem('userId');
