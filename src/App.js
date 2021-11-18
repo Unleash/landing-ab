@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import ReactGA from 'react-ga';
 import { BrowserRouter, Route } from 'react-router-dom';
+import { UnleashClient } from 'unleash-proxy-client';
 
 import './App.css';
 
@@ -14,7 +15,37 @@ import tentImage from './img/pexels-josh-hild-2422265.jpg';
 import northernLights from './img/northernlights.jpg';
 import mountains from './img/mountains.jpg';
 
-function App({ unleash, userId }) {
+ReactGA.initialize(process.env.REACT_APP_GA_TRACKING);
+
+const callback = (event) => {
+  ReactGA.event({
+    category: 'Viewed page',
+    action: 'Viewed the landing page',
+    label: event.featureName,
+    variant: event.variant,
+  });
+};
+
+const unleash = new UnleashClient({
+  url: process.env.REACT_APP_PROXY_URL,
+  clientKey: process.env.REACT_APP_CLIENT_KEY,
+  refreshInterval: 2,
+  appName: 'landing-example',
+  environment: 'production',
+  callback,
+});
+
+let userId = localStorage.getItem('userId');
+
+if (!userId) {
+  userId = Math.round(Math.random() * 100000000);
+  localStorage.setItem('userId', userId);
+}
+
+unleash.updateContext({ userId });
+unleash.start();
+
+function App() {
   const [toggle, setToggle] = useState({
     enabled: true,
     name: 'default',
@@ -26,34 +57,28 @@ function App({ unleash, userId }) {
     const name = unleash.getVariant('travel.landing').name;
 
     setToggle({ enabled, name, ready: true });
-  }, [unleash]);
+  }, []);
 
   useEffect(() => {
-    ReactGA.initialize(process.env.REACT_APP_GA_TRACKING, {
-      gaOptions: {
-        userId: userId,
-      },
-    });
-
     unleash.on('update', () => getToggle());
-  }, [unleash, getToggle, userId]);
+  }, [getToggle, userId]);
 
-  useEffect(() => {
-    if (toggle.ready) {
-      ReactGA.event({
-        category: 'Viewed page',
-        action: 'Viewed the landing page',
-        label: toggle.name,
-      });
-    }
-  }, [toggle.ready, toggle.name]);
+  // useEffect(() => {
+  //   if (toggle.ready) {
+  //     ReactGA.event({
+  //       category: 'Viewed page',
+  //       action: 'Viewed the landing page',
+  //       label: toggle.name,
+  //     });
+  //   }
+  // }, [toggle.ready, toggle.name]);
 
-  useEffect(() => {
-    ReactGA.set({
-      dimension1: `travel.landing - ${toggle.variant}`,
-    });
-    ReactGA.pageview(window.location);
-  }, [toggle.variant, toggle.toggleName]);
+  // useEffect(() => {
+  //   ReactGA.set({
+  //     dimension1: `travel.landing - ${toggle.variant}`,
+  //   });
+  //   ReactGA.pageview(window.location);
+  // }, [toggle.variant, toggle.toggleName]);
 
   if (!toggle.ready) return null;
 
