@@ -3,8 +3,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import ReactGA from 'react-ga';
 import { BrowserRouter, Route } from 'react-router-dom';
-import { UnleashClient, PlausibleProvider } from 'unleash-proxy-client';
-import Plausible from 'plausible-tracker'
+import {
+  UnleashClient,
+  PlausibleProvider,
+  EVENTS,
+} from 'unleash-proxy-client';
+import Plausible from 'plausible-tracker';
 
 import './App.css';
 
@@ -16,31 +20,19 @@ import tentImage from './img/pexels-josh-hild-2422265.jpg';
 import northernLights from './img/northernlights.jpg';
 import mountains from './img/mountains.jpg';
 
-ReactGA.initialize(process.env.REACT_APP_GA_TRACKING);
-
-const callback = (event) => {
-  ReactGA.event({
-    category: 'Viewed page',
-    action: 'Viewed the landing page',
-    label: event.featureName,
-    variant: event.variant,
-  });
-};
-
 const plausible = Plausible({
   domain: 'getunleash.io',
-  trackLocalhost: true
-})
+  trackLocalhost: true,
+});
 
 const plausibleProvider = new PlausibleProvider(plausible);
 
 const unleash = new UnleashClient({
   url: process.env.REACT_APP_PROXY_URL,
   clientKey: process.env.REACT_APP_CLIENT_KEY,
-  refreshInterval: 2,
+  refreshInterval: 10,
   appName: 'landing-example',
   environment: 'production',
-  callbacks: [plausibleProvider.sendEvent],
 });
 
 let userId = localStorage.getItem('userId');
@@ -49,6 +41,8 @@ if (!userId) {
   userId = Math.round(Math.random() * 100000000);
   localStorage.setItem('userId', userId);
 }
+
+console.log(userId);
 
 unleash.updateContext({ userId });
 unleash.start();
@@ -60,6 +54,15 @@ function App() {
     ready: false,
   });
 
+  useEffect(() => {
+    console.log('TRACKING KEY:', process.env.REACT_APP_GA_TRACKING);
+    ReactGA.initialize(process.env.REACT_APP_GA_TRACKING, { debug: true });
+
+    unleash.on(EVENTS.GET_VARIANT, (event) => {
+      plausible.trackEvent(event);
+    });
+  }, []);
+
   const getToggle = useCallback(() => {
     const enabled = unleash.getVariant('travel.landing').enabled;
     const name = unleash.getVariant('travel.landing').name;
@@ -69,24 +72,7 @@ function App() {
 
   useEffect(() => {
     unleash.on('update', () => getToggle());
-  }, [getToggle, userId]);
-
-  // useEffect(() => {
-  //   if (toggle.ready) {
-  //     ReactGA.event({
-  //       category: 'Viewed page',
-  //       action: 'Viewed the landing page',
-  //       label: toggle.name,
-  //     });
-  //   }
-  // }, [toggle.ready, toggle.name]);
-
-  // useEffect(() => {
-  //   ReactGA.set({
-  //     dimension1: `travel.landing - ${toggle.variant}`,
-  //   });
-  //   ReactGA.pageview(window.location);
-  // }, [toggle.variant, toggle.toggleName]);
+  }, []);
 
   if (!toggle.ready) return null;
 
