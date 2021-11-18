@@ -3,7 +3,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import ReactGA from 'react-ga';
 import { BrowserRouter, Route } from 'react-router-dom';
-import { UnleashClient } from 'unleash-proxy-client';
+import { UnleashClient, PlausibleProvider } from 'unleash-proxy-client';
+import Plausible from 'plausible-tracker'
 
 import './App.css';
 
@@ -26,13 +27,20 @@ const callback = (event) => {
   });
 };
 
+const plausible = Plausible({
+  domain: 'getunleash.io',
+  trackLocalhost: true
+})
+
+const plausibleProvider = new PlausibleProvider(plausible);
+
 const unleash = new UnleashClient({
   url: process.env.REACT_APP_PROXY_URL,
   clientKey: process.env.REACT_APP_CLIENT_KEY,
   refreshInterval: 2,
   appName: 'landing-example',
   environment: 'production',
-  callbacks: [callback],
+  callbacks: [plausibleProvider.sendEvent],
 });
 
 let userId = localStorage.getItem('userId');
