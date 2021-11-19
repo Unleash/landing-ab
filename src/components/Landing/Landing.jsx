@@ -9,12 +9,8 @@ const Landing = ({ text, cta, tracker, imageUrl, variant, unleash }) => {
   const history = useHistory();
 
   const onClick = () => {
-    unleash.sendCustomEvent('landing.ab');
-    // tracker.event({
-    //   category: 'CTA',
-    //   action: 'Navigated to explore page',
-    //   label: variant,
-    // });
+    unleash.sendCustomEvent('landing.ab', 'converted');
+
     history.push('/search');
   };
 

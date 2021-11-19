@@ -1,15 +1,9 @@
 /** @format */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import mixpanel from 'mixpanel-browser';
 import ReactGA from 'react-ga';
 import { BrowserRouter, Route } from 'react-router-dom';
-import {
-  UnleashClient,
-  PlausibleProvider,
-  EVENTS,
-} from 'unleash-proxy-client';
-import Plausible from 'plausible-tracker';
+import { UnleashClient, EVENTS } from 'unleash-proxy-client';
 
 import './App.css';
 
@@ -20,13 +14,6 @@ import Search from './components/Search/Search';
 import tentImage from './img/pexels-josh-hild-2422265.jpg';
 import northernLights from './img/northernlights.jpg';
 import mountains from './img/mountains.jpg';
-
-const plausible = Plausible({
-  domain: 'getunleash.io',
-  trackLocalhost: true,
-});
-
-const plausibleProvider = new PlausibleProvider(plausible);
 
 const unleash = new UnleashClient({
   url: process.env.REACT_APP_PROXY_URL,
@@ -54,16 +41,21 @@ function App() {
   });
 
   useEffect(() => {
-    console.log('TRACKING KEY:', process.env.REACT_APP_GA_TRACKING);
+    ReactGA.event({
+      action: 'Viewed page',
+      category: 'pageview',
+      label: `User ${userId} viewed the page`,
+    });
+  }, []);
+
+  useEffect(() => {
     ReactGA.initialize(process.env.REACT_APP_GA_TRACKING, { debug: true });
 
     unleash.on(EVENTS.GET_VARIANT, (event) => {
-      plausible.trackEvent(event);
-
       ReactGA.event({
         action: 'Received variant',
         category: 'variant',
-        label: event.label,
+        label: `${userId} received variant ${event.variant}`,
       });
     });
   }, []);
@@ -77,6 +69,13 @@ function App() {
 
   useEffect(() => {
     unleash.on('update', () => getToggle());
+    unleash.on('custom', (event) => {
+      ReactGA.event({
+        action: 'Navigated to search page',
+        category: 'variant',
+        label: `${userId} converted by navigating to search page ${event.variant}`,
+      });
+    });
   }, []);
 
   if (!toggle.ready) return null;
